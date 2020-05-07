@@ -23,7 +23,7 @@ class Index extends Component {
         sendLoanding: false,
         recipientAddress: '',
         value: '',
-        collateralTokenSymbol: 'KNC',
+        collateralTokenSymbol: 'TKN',
         collateralUploadLoading: false,
         collateralValue: '',
         metamaskAddress: 'Not Logged in',

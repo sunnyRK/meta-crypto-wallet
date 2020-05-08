@@ -38,31 +38,54 @@ class Index extends Component {
             var accounts = await web3.eth.getAccounts();
             var walletAddress = '0xD16AdDBF04Bd39DC2Cb7F87942F904D4a7B8281B'; // spender address kovan
             const contractInstance = getWalletContractInstance(web3, walletAddress);
-            const bAddress = await contractInstance.methods.getBiconomyAddress(accounts[0]).call();
-            if(bAddress == "0x0000000000000000000000000000000000000000" || bAddress == "") {
-                let response = await biconomy.login(accounts[0]);
+            let responseAddress;
+            
+            let response = await biconomy.login(accounts[0]);
                 if(response && response.transactionHash) {
                     console.log("Please wait...");
-                    await biconomyLogin(web3, contractInstance, response.userContract);
-                    this.setState({
-                        biconomyAddress: response.userContract,
-                        metamaskAddress: accounts[0]
-                    });
+                    console.log(response);
+                    let response2 = await biconomy.login(accounts[0]);
+                    console.log(response2);
+                    alert("Login Successful...");
+                    responseAddress = response2.userContract;
+                    const bAddress = await contractInstance.methods.getBiconomyAddress(accounts[0]).call();
+                    if(bAddress == "0x0000000000000000000000000000000000000000" || bAddress == "") {
+                        alert("You are new biconomy user so press ok to register address in instcryp wallet");
+
+                        await biconomyLogin(web3, contractInstance, responseAddress);
+                            this.setState({
+                                biconomyAddress: responseAddress,
+                                metamaskAddress: accounts[0]
+                            });
+                    } else {
+                        this.setState({
+                            biconomyAddress: bAddress,
+                            metamaskAddress: accounts[0]
+                        });
+                    }
+
                 } else if (response && response.userContract) {
                     console.log("Successfully logged in...");
                     console.log(response.userContract);
-                    await biconomyLogin(web3, contractInstance, response.userContract);
-                    this.setState({
-                        biconomyAddress: response.userContract,
-                        metamaskAddress: accounts[0]
-                    });
+                    responseAddress = response.userContract;
+                    alert("Login Successful...");
+
+                    const bAddress = await contractInstance.methods.getBiconomyAddress(accounts[0]).call();
+                    if(bAddress == "0x0000000000000000000000000000000000000000" || bAddress == "") {
+                        alert("You are new biconomy user so press ok to register address in instcryp wallet");
+                        await biconomyLogin(web3, contractInstance, responseAddress);
+                            this.setState({
+                                biconomyAddress: responseAddress,
+                                metamaskAddress: accounts[0]
+                            });
+                    } else {
+                        this.setState({
+                            biconomyAddress: bAddress,
+                            metamaskAddress: accounts[0]
+                        });
+                    }
                 }
-            } else {
-                this.setState({
-                    biconomyAddress: bAddress,
-                    metamaskAddress: accounts[0]
-                });
-            }
+            
             toast.success("You are logged in !", {
                 position: toast.POSITION.TOP_RIGHT
             });
